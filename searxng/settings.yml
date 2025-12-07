@@ -386,25 +386,6 @@ engines:
     timeout: 6
     disabled: true
 
-  - name: alexandria
-    engine: json_engine
-    shortcut: alx
-    categories: general
-    paging: true
-    search_url: https://api.alexandria.org/?a=1&q={query}&p={pageno}
-    results_query: results
-    title_query: title
-    url_query: url
-    content_query: snippet
-    timeout: 1.5
-    disabled: true
-    about:
-      website: https://alexandria.org/
-      official_api_documentation: https://github.com/alexandria-org/alexandria-api/raw/master/README.md
-      use_official_api: true
-      require_api_key: false
-      results: JSON
-
   - name: astrophysics data system
     engine: astrophysics_data_system
     shortcut: ads
@@ -734,6 +715,11 @@ engines:
   - name: deviantart
     engine: deviantart
     shortcut: da
+    timeout: 3.0
+
+  - name: devicons
+    engine: devicons
+    shortcut: di
     timeout: 3.0
 
   - name: ddg definitions
@@ -1072,6 +1058,12 @@ engines:
     play_categ: movies
     disabled: true
 
+  - name: grokipedia
+    engine: grokipedia
+    shortcut: gp
+    disabled: true
+    inactive: true
+
   - name: material icons
     engine: material_icons
     shortcut: mi
@@ -1300,6 +1292,11 @@ engines:
       require_api_key: false
       results: HTML
 
+  - name: lucide
+    engine: lucide
+    shortcut: luc
+    timeout: 3.0
+
   - name: marginalia
     engine: marginalia
     shortcut: mar
@@ -1430,22 +1427,6 @@ engines:
       use_official_api: true
       require_api_key: false
       results: JSON
-
-  # https://docs.searxng.org/dev/engines/online/mullvad_leta.html
-  - name: mullvadleta
-    engine: mullvad_leta
-    disabled: true
-    leta_engine: google
-    categories: [general, web]
-    shortcut: ml
-
-  - name: mullvadleta brave
-    engine: mullvad_leta
-    network: mullvadleta
-    disabled: true
-    leta_engine: brave
-    categories: [general, web]
-    shortcut: mlb
 
   - name: odysee
     engine: odysee
@@ -2680,26 +2661,6 @@ engines:
     # https://docs.searxng.org/dev/engines/online/sourcehut.html
     # sourcehut_sort_order: longest-active
     disabled: true
-
-  - name: goo
-    shortcut: goo
-    engine: xpath
-    paging: true
-    search_url: https://search.goo.ne.jp/web.jsp?MT={query}&FR={pageno}0
-    url_xpath: //div[@class="result"]/p[@class='title fsL1']/a/@href
-    title_xpath: //div[@class="result"]/p[@class='title fsL1']/a
-    content_xpath: //p[contains(@class,'url fsM')]/following-sibling::p
-    first_page_num: 0
-    categories: [general, web]
-    disabled: true
-    timeout: 4.0
-    about:
-      website: https://search.goo.ne.jp
-      wikidata_id: Q249044
-      use_official_api: false
-      require_api_key: false
-      results: HTML
-      language: ja
 
   - name: bt4g
     engine: bt4g
