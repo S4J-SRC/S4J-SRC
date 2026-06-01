@@ -26,8 +26,8 @@ brand:
 search:
   # Filter results. 0: None, 1: Moderate, 2: Strict
   safe_search: 1
-  # Existing autocomplete backends: "360search", "baidu", "brave", "dbpedia", "duckduckgo", "google", "yandex",
-  # "mwmbl", "naver", "seznam", "sogou", "startpage", "stract", "swisscows", "quark", "qwant", "wikipedia" -
+  # Existing autocomplete backends: "360search", "baidu", "bing", "brave", "dbpedia", "duckduckgo", "google",
+  # "yandex", "mwmbl", "naver", "seznam", "sogou", "startpage", "swisscows", "quark", "qwant", "wikipedia" -
   # leave blank to turn it off by default.
   autocomplete: "duckduckgo"
   # minimun characters to type before autocompleter starts
@@ -55,11 +55,11 @@ search:
   suspended_times:
     # Engine suspension time after error (in seconds; set to 0 to disable)
     # For error "Access denied" and "HTTP error [402, 403]"
-    SearxEngineAccessDenied: 86400
+    SearxEngineAccessDenied: 180
     # For error "CAPTCHA"
-    SearxEngineCaptcha: 86400
+    SearxEngineCaptcha: 3600
     # For error "Too many request" and "HTTP error 429"
-    SearxEngineTooManyRequests: 3600
+    SearxEngineTooManyRequests: 180
     # Cloudflare CAPTCHA
     cf_SearxEngineCaptcha: 1296000
     cf_SearxEngineAccessDenied: 86400
@@ -119,8 +119,6 @@ ui:
   # query_in_title: When true, the result page's titles contains the query
   # it decreases the privacy, since the browser can records the page titles.
   query_in_title: false
-  # infinite_scroll: When true, automatically loads the next page when scrolling to bottom of the current page.
-  infinite_scroll: false
   # ui theme
   default_theme: simple
   # center the results ?
@@ -147,18 +145,18 @@ ui:
 # Lock arbitrary settings on the preferences page.
 #
 preferences:
-  lock:
+  # Lock arbitrary settings on the preferences page.
+  lock: [favicon_resolver]
 #     - categories
 #     - language
 #     - autocomplete
-    - favicon
+#     - favicon_resolver
 #     - safesearch
 #     - method
 #     - doi_resolver
 #     - locale
 #     - theme
 #     - results_on_new_tab
-#     - infinite_scroll
 #     - search_on_category_select
 #     - method
 #     - image_proxy
@@ -218,6 +216,9 @@ plugins:
   searx.plugins.calculator.SXNGPlugin:
     active: true
 
+  searx.plugins.infinite_scroll.SXNGPlugin:
+    active: true
+
   searx.plugins.hash_plugin.SXNGPlugin:
     active: true
 
@@ -228,7 +229,7 @@ plugins:
     active: true
 
   searx.plugins.ahmia_filter.SXNGPlugin:
-    active: true
+    active: false
 
   searx.plugins.hostnames.SXNGPlugin:
     active: true
@@ -275,54 +276,6 @@ hostnames:
   replace: 'rewrite-hosts.yml'
   remove: 'remove-hosts.yml'
 
-checker:
-  # disable checker when in debug mode
-  off_when_debug: true
-
-  # use "scheduling: {}" to disable scheduling
-  # scheduling: interval or int
-
-  # to activate the scheduler:
-  # * uncomment "scheduling" section
-  # * add "cache2 = name=searxngcache,items=2000,blocks=2000,blocksize=4096,bitmap=1"
-  #   to your uwsgi.ini
-
-  scheduling:
-    start_after: [300, 1800]  # delay to start the first run of the checker
-    every: [86400, 90000]     # how often the checker runs
-
-  # additional tests: only for the YAML anchors (see the engines section)
-  #
-  additional_tests:
-    rosebud: &test_rosebud
-      matrix:
-        query: rosebud
-        lang: en
-      result_container:
-        - not_empty
-        - ['one_title_contains', 'citizen kane']
-      test:
-        - unique_results
-
-    android: &test_android
-      matrix:
-        query: ['android']
-        lang: ['en', 'de', 'fr', 'zh-CN']
-      result_container:
-        - not_empty
-        - ['one_title_contains', 'google']
-      test:
-        - unique_results
-
-  # tests: only for the YAML anchors (see the engines section)
-  tests:
-    infobox: &tests_infobox
-      infobox:
-        matrix:
-          query: ["linux", "new york", "bbc"]
-        result_container:
-          - has_infobox
-
 categories_as_tabs:
   general:
   images:
@@ -339,13 +292,19 @@ engines:
   - name: 360search
     engine: 360search
     shortcut: 360so
-    timeout: 10.0
+    timeout: 20.0
     disabled: true
 
   - name: 360search videos
     engine: 360search_videos
     shortcut: 360sov
     disabled: true
+
+  - name: 500px
+    engine: 500px
+    shortcut: "500"
+    disabled: true
+    timeout: 5
 
   - name: 9gag
     engine: 9gag
@@ -402,8 +361,10 @@ engines:
   - name: annas archive
     engine: annas_archive
     base_url:
-      - https://annas-archive.li
-      - https://annas-archive.pm
+      - https://annas-archive.gl
+      - https://annas-archive.vg
+      - https://annas-archive.pk
+      - https://annas-archive.gd
     disabled: true
     shortcut: aa
     timeout: 5
@@ -441,6 +402,7 @@ engines:
     categories: onions
     enable_http: true
     shortcut: ah
+    inactive: true
 
   - name: anaconda
     engine: xpath
@@ -454,6 +416,27 @@ engines:
     categories: it
     timeout: 6.0
     shortcut: conda
+    disabled: true
+
+  - name: aol
+    engine: aol
+    search_type: search
+    categories: [general]
+    shortcut: aol
+    disabled: true
+
+  - name: aol images
+    engine: aol
+    search_type: image
+    categories: [images]
+    shortcut: aoli
+    disabled: true
+
+  - name: aol videos
+    engine: aol
+    search_type: video
+    categories: [videos]
+    shortcut: aolv
     disabled: true
 
   - name: arch linux wiki
@@ -484,11 +467,6 @@ engines:
     engine: arxiv
     shortcut: arx
     timeout: 4.0
-
-  - name: ask
-    engine: ask
-    shortcut: ask
-    disabled: true
 
   - name: azure
     engine: azure
@@ -546,18 +524,22 @@ engines:
     engine: bing
     shortcut: bi
     disabled: true
+    # base_url: https://cn.bing.com  # for instances hosted in China
 
   - name: bing images
     engine: bing_images
     shortcut: bii
+    # base_url: https://cn.bing.com  # for instances hosted in China
 
   - name: bing news
     engine: bing_news
     shortcut: bin
+    # base_url: https://cn.bing.com  # for instances hosted in China
 
   - name: bing videos
     engine: bing_videos
     shortcut: biv
+    # base_url: https://cn.bing.com  # for instances hosted in China
 
   - name: bitchute
     engine: bitchute
@@ -582,6 +564,11 @@ engines:
       use_official_api: false
       require_api_key: false
       results: HTML
+
+  - name: boardreader
+    engine: boardreader
+    shortcut: boa
+    disabled: true
 
   - name: bpb
     engine: bpb
@@ -612,6 +599,11 @@ engines:
     shortcut: cos
     disabled: true
 
+  - name: cara
+    engine: cara
+    shortcut: ca
+    disabled: true
+
   - name: chefkoch
     engine: chefkoch
     shortcut: chef
@@ -622,6 +614,7 @@ engines:
   # Before activate these engines its mandatory to read
   # - https://github.com/searxng/searxng/issues/4694
   # - https://docs.searxng.org/dev/engines/online/chinaso.html
+
   - name: chinaso news
     engine: chinaso
     shortcut: chinaso
@@ -699,22 +692,6 @@ engines:
     engine: yep
     shortcut: yep
     categories: general
-    search_type: web
-    timeout: 15
-    disabled: true
-
-  - name: yep images
-    engine: yep
-    shortcut: yepi
-    categories: images
-    search_type: images
-    disabled: true
-
-  - name: yep news
-    engine: yep
-    shortcut: yepn
-    categories: news
-    search_type: news
     disabled: true
 
   - name: currency
@@ -747,7 +724,6 @@ engines:
     shortcut: ddd
     weight: 2
     disabled: true
-    tests: *tests_infobox
 
   # cloudflare protected
   # - name: digbt
@@ -821,7 +797,6 @@ engines:
     weight: 2
     # add "list" to the array to get results in the results list
     display_type: ["infobox"]
-    tests: *tests_infobox
     categories: [general]
 
   - name: duckduckgo
@@ -830,21 +805,21 @@ engines:
 
   - name: duckduckgo images
     engine: duckduckgo_extra
-    categories: [images, web]
+    categories: [images]
     ddg_category: images
     shortcut: ddi
     disabled: true
 
   - name: duckduckgo videos
     engine: duckduckgo_extra
-    categories: [videos, web]
+    categories: [videos]
     ddg_category: videos
     shortcut: ddv
     disabled: true
 
   - name: duckduckgo news
     engine: duckduckgo_extra
-    categories: [news, web]
+    categories: [news]
     ddg_category: news
     shortcut: ddn
     disabled: true
@@ -924,7 +899,8 @@ engines:
     engine: flickr
     categories: images
     shortcut: fla
-    # engine: flickr
+    # api_key: 'apikey' # required!
+    inactive: true
 
   - name: free software directory
     engine: mediawiki
@@ -953,7 +929,12 @@ engines:
 
   - name: fynd
     engine: xpath
-    search_url: https://fynd.bot/?search={query}&offset={pageno}
+    search_url: https://fynd.bot/?search={query}&offset={pageno}{safe_search}
+    safesearch: true
+    safe_search_map:
+      0: '&safe=0'
+      1: '&safe=1'
+      2: '&safe=1'
     results_xpath: //div[contains(@class, "result-item")]
     url_xpath: .//a/@href
     title_xpath: .//div[contains(@class, "title-line")]
@@ -1047,6 +1028,11 @@ engines:
     shortcut: gitea
     disabled: true
 
+  - name: gmx
+    engine: gmx
+    shortcut: gmx
+    disabled: true
+
   - name: goodreads
     engine: goodreads
     shortcut: good
@@ -1056,32 +1042,18 @@ engines:
   - name: google
     engine: google
     shortcut: go
-    # additional_tests:
-    #   android: *test_android
 
   - name: google images
     engine: google_images
     shortcut: goi
-    # additional_tests:
-    #   android: *test_android
-    #   dali:
-    #     matrix:
-    #       query: ['Dali Christ']
-    #       lang: ['en', 'de', 'fr', 'zh-CN']
-    #     result_container:
-    #       - ['one_title_contains', 'Salvador']
 
   - name: google news
     engine: google_news
     shortcut: gon
-    # additional_tests:
-    #   android: *test_android
 
   - name: google videos
     engine: google_videos
     shortcut: gov
-    # additional_tests:
-    #   android: *test_android
 
   - name: google scholar
     engine: google_scholar
@@ -1234,6 +1206,35 @@ engines:
     timeout: 3.0
     disabled: true
 
+  - name: karmasearch
+    engine: karmasearch
+    categories: [general, web]
+    search_type: web
+    shortcut: ka
+    inactive: true
+
+  - name: karmasearch images
+    engine: karmasearch
+    categories: [images, web]
+    search_type: images
+    shortcut: kai
+    paging: false
+    inactive: true
+
+  - name: karmasearch videos
+    engine: karmasearch
+    categories: [videos, web]
+    search_type: videos
+    shortcut: kav
+    inactive: true
+
+  - name: karmasearch news
+    engine: karmasearch
+    categories: [news, web]
+    search_type: news
+    shortcut: kan
+    inactive: true
+
   - name: kickass
     engine: kickass
     base_url:
@@ -1306,15 +1307,16 @@ engines:
     # https://github.com/LibreTranslate/LibreTranslate?tab=readme-ov-file#mirrors
     base_url:
       - https://libretranslate.com/translate
-    # api_key: abc123
+    # api_key: ''
     shortcut: lt
     inactive: true
 
   - name: lingva
     engine: lingva
     shortcut: lv
+    timeout: 6.0
     # set lingva instance in url, by default it will use the official instance
-    # url: https://lingva.thedaviddelta.com
+    # url: https://lingva.ml
 
   - name: lobste.rs
     engine: xpath
@@ -1390,7 +1392,6 @@ engines:
     engine: metacpan
     shortcut: cpan
     disabled: true
-    number_of_results: 20
 
   # https://docs.searxng.org/dev/engines/offline/search-indexer-engines.html#module-searx.engines.meilisearch
   # - name: meilisearch
@@ -1603,6 +1604,10 @@ engines:
     # Hide obsolete PDB entries.  Default is not to hide obsolete structures
     #  hide_obsolete: false
 
+  - name: pexels
+    engine: pexels
+    shortcut: pe
+
   - name: photon
     engine: photon
     shortcut: ph
@@ -1668,7 +1673,7 @@ engines:
       - https://pximg.example.org
       # A proxy is required to load the images. Hosting an image proxy server
       # for Pixiv:
-      #    --> https://pixivfe.pages.dev/hosting-image-proxy-server/
+      #    --> https://pixivfe-docs.pages.dev/hosting/image-proxy-server/
       # Proxies from public instances.  Ask the public instances owners if they
       # agree to receive traffic from SearXNG!
       #    --> https://codeberg.org/VnPower/PixivFE#instances
@@ -1683,10 +1688,6 @@ engines:
       # - https://pixiv.ducks.party
       # image proxy of https://pixiv.perennialte.ch
       # - https://pximg.perennialte.ch
-
-  - name: podcastindex
-    engine: podcastindex
-    shortcut: podcast
 
   # Required dependency: psychopg2
   #  - name: postgresql
@@ -1785,8 +1786,6 @@ engines:
     engine: qwant
     shortcut: qw
     categories: [general, web]
-    additional_tests:
-      rosebud: *test_rosebud
 
   - name: qwant news
     qwant_categ: news
@@ -1847,24 +1846,6 @@ engines:
     # https://docs.searxng.org/dev/engines/online/reuters.html
     # sort_order = "relevance"
 
-  - name: right dao
-    engine: xpath
-    paging: true
-    page_size: 12
-    search_url: https://rightdao.com/search?q={query}&start={pageno}
-    results_xpath: //div[contains(@class, "description")]
-    url_xpath: ../div[contains(@class, "title")]/a/@href
-    title_xpath: ../div[contains(@class, "title")]
-    content_xpath: .
-    categories: general
-    shortcut: rd
-    disabled: true
-    about:
-      website: https://rightdao.com/
-      use_official_api: false
-      require_api_key: false
-      results: HTML
-
   - name: rottentomatoes
     engine: rottentomatoes
     shortcut: rt
@@ -1909,7 +1890,6 @@ engines:
   - name: sepiasearch
     engine: sepiasearch
     shortcut: sep
-
 
   - name: sogou
     engine: sogou
@@ -1974,12 +1954,6 @@ engines:
     base_url: 'https://discourse.pi-hole.net'
     disabled: true
 
-  - name: searchcode code
-    engine: searchcode_code
-    shortcut: scc
-    disabled: true
-    inactive: true
-
   # - name: searx
   #   engine: searx_engine
   #   shortcut: se
@@ -2025,8 +1999,6 @@ engines:
     startpage_categ: web
     categories: [general, web]
     disabled: true
-    additional_tests:
-      rosebud: *test_rosebud
 
   - name: startpage news
     engine: startpage
@@ -2114,6 +2086,7 @@ engines:
     categories: onions
     enable_http: true
     shortcut: tch
+    inactive: true
 
   # TubeArchivist is a self-hosted Youtube archivist software.
   # https://docs.searxng.org/dev/engines/online/tubearchivist.html
@@ -2252,8 +2225,6 @@ engines:
     base_url: "https://{language}.wikiquote.org/"
     search_type: text
     disabled: true
-    additional_tests:
-      rosebud: *test_rosebud
     about:
       website: https://www.wikiquote.org/
       wikidata_id: Q369
@@ -2280,16 +2251,6 @@ engines:
     about:
       website: https://species.wikimedia.org/
       wikidata_id: Q13679
-    tests:
-      wikispecies:
-        matrix:
-          query: "Campbell, L.I. et al. 2011: MicroRNAs"
-          lang: en
-        result_container:
-          - not_empty
-          - ['one_title_contains', 'Tardigrada']
-        test:
-          - unique_results
 
   - name: wiktionary
     engine: mediawiki
@@ -2555,13 +2516,6 @@ engines:
     disabled: true
     inactive: true
 
-  - name: livespace
-    engine: livespace
-    shortcut: ls
-    categories: videos
-    disabled: true
-    timeout: 5.0
-
   - name: wordnik
     engine: wordnik
     shortcut: wnik
@@ -2585,40 +2539,6 @@ engines:
       require_api_key: false
       results: HTML
       language: de
-
-  - name: seekr news
-    engine: seekr
-    shortcut: senews
-    categories: news
-    seekr_category: news
-    disabled: true
-
-  - name: seekr images
-    engine: seekr
-    network: seekr news
-    shortcut: seimg
-    categories: images
-    seekr_category: images
-    disabled: true
-
-  - name: seekr videos
-    engine: seekr
-    network: seekr news
-    shortcut: sevid
-    categories: videos
-    seekr_category: videos
-    disabled: true
-
-  - name: stract
-    engine: stract
-    shortcut: str
-    disabled: true
-
-  - name: svgrepo
-    engine: svgrepo
-    shortcut: svg
-    timeout: 10.0
-    disabled: true
 
   - name: tootfinder
     engine: tootfinder

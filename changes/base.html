@@ -6,8 +6,8 @@
     <meta property="og:locale" content="en_US" />
     <meta property="og:url" content="https://www.searchforjohn.com/">
     <meta property="og:title" content="SearchForJohn">
-    <meta property="og:description" content="SearchForJohn — a privacy-respecting, open metasearch engine">
-    <meta name="description" content="SearchForJohn — a privacy-respecting, open metasearch engine">
+    <meta property="og:description" content="SearchForJohn - a privacy-respecting, open metasearch engine">
+    <meta name="description" content="SearchForJohn - a privacy-respecting, open metasearch engine">
     <meta name="keywords" content="SearchForJohn, search, search engine, metasearch, meta search">
     <meta name="generator" content="SearchForJohn/{{ searx_version }}">
     <meta name="referrer" content="no-referrer">
@@ -71,7 +71,7 @@
   </main>
   <footer>
     <p>
-    <a href="{{ url_for('info', pagename='about') }}">SearchForJohn</a> - {{ searx_version }} — {{ _('a privacy-respecting metasearch engine') }}<br/>
+    <a href="{{ url_for('info', pagename='about') }}">SearchForJohn</a> - {{ _('a privacy-respecting metasearch engine') }}<br/>
         {% if enable_metrics %}<a href="{{ url_for('stats') }}">{{ _('Engine stats') }}</a> | 
         {% endif %}
         {% if get_setting('brand.public_instances') %}

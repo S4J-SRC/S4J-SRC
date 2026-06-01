@@ -49,19 +49,19 @@ services:
       - sh
       - "-c"
       - |
-        sed -i 's|/img/searxng.png|/img/s4j.png|g' \
-          /usr/local/searxng/searx/static/themes/simple/css/searxng-rtl.min.css
-        sed -i 's|/img/searxng.png|/img/s4j.png|g' \
-          /usr/local/searxng/searx/static/themes/simple/css/searxng-ltr.min.css
-        cp -f /usr/local/searxng/searx/static/themes/simple/sxng-rtl.min.css \
-              /usr/local/searxng/searx/static/themes/simple/s4j-rtl.min.css
-        cp -f /usr/local/searxng/searx/static/themes/simple/sxng-ltr.min.css \
-              /usr/local/searxng/searx/static/themes/simple/s4j-ltr.min.css
-        cp -f /usr/local/searxng/searx/static/themes/simple/sxng.core.min.js \
-              /usr/local/searxng/searx/static/themes/simple/s4j.core.min.js
-        cp -f /usr/local/searxng/searx/static/themes/simple/sxng.core.min.js.map \
-              /usr/local/searxng/searx/static/themes/simple/s4j.core.min.js.map
         exec /usr/local/searxng/entrypoint.sh
+#         sed -i 's|/img/searxng.png|/img/s4j.png|g' \
+#           /usr/local/searxng/searx/static/themes/simple/css/searxng-rtl.min.css
+#         sed -i 's|/img/searxng.png|/img/s4j.png|g' \
+#           /usr/local/searxng/searx/static/themes/simple/css/searxng-ltr.min.css
+#         cp -f /usr/local/searxng/searx/static/themes/simple/sxng-rtl.min.css \
+#               /usr/local/searxng/searx/static/themes/simple/s4j-rtl.min.css
+#         cp -f /usr/local/searxng/searx/static/themes/simple/sxng-ltr.min.css \
+#               /usr/local/searxng/searx/static/themes/simple/s4j-ltr.min.css
+#         cp -f /usr/local/searxng/searx/static/themes/simple/sxng.core.min.js \
+#               /usr/local/searxng/searx/static/themes/simple/s4j.core.min.js
+#         cp -f /usr/local/searxng/searx/static/themes/simple/sxng.core.min.js.map \
+#               /usr/local/searxng/searx/static/themes/simple/s4j.core.min.js.map
 #         sed -i 's/How to navigate SearXNG with hotkeys/How to navigate SearchForJohn with hotkeys/g' \
 #           /usr/local/searxng/searxng/client/simple/src/js/main/keyboard.ts
 #         sed -i 's/How to navigate SearXNG with hotkeys/How to navigate SearchForJohn with hotkeys/g' \
